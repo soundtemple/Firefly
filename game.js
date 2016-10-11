@@ -5,8 +5,8 @@ var board = [];
 var players = ['Player1', 'Player2']
 var player1Pos = 0;
 var player2Pos = 0;
-var boardRows = 10;
-var boardCols = 10;
+var boardRows = 10; // potentiallly not required in new format
+var boardCols = 10; //
 var currentPlayer = 0;
 var diceSize = 6; // thrust potential
 
@@ -106,64 +106,71 @@ function createBoard(){
   for (var i=0; i<boardSize; i++) {
     board.push('x');
   }
+  calcJumps();
   console.log(board);
   return board
 };
 
-// create BlackHoles for board
-function getNumBlackHoles() {
+// create arrays for BH & TC position & values
+function calcJumps() {
+  var jumps = calcJumpNums();
+  var jumpPositions = createJumpPos(jumps.numBlackHoles + jumps.numTimeCorridors);
+  var numBlackHoles = jumps.numBlackHoles;
+  var numTimeCorridors = jumps.numTimeCorridors;
+  var totalJumps = jumps.numBlackHoles + jumps.numTimeCorridors
+  var jumpAmts = createJumpAmts(jumpPositions, numBlackHoles)
+  // add jumps to the board
+  console.log('total jumps = ' + totalJumps);
+  for (var i=0; i<totalJumps; i++) {
+      console.log(jumpPositions[i] + ' amt = ' + jumpAmts[i] );
+      board[jumpPositions[i]] = jumpAmts[i];
+    }
+  console.log('Number of black Holes = ' + numBlackHoles);
+  console.log('Number of Time corridors = ' + numTimeCorridors);
+  console.log('Jump Positions located at = ' + jumpPositions);
+  console.log('Jump Amounts are = ' + jumpAmts);
+};
+
+
+// create number of BlackHoles and time corridors for board
+function calcJumpNums() {
   var complexity = setComplexity();
   var boardSize = getBoardSize();
-  numBlackHoles = parseInt(boardSize * complexity * (7/100));
-  console.log('BlackHoles# ' + numBlackHoles);
-  return numBlackHoles;
+  var numBlackHoles = parseInt(boardSize * complexity * (7/100));
+  var numTimeCorridors = parseInt(boardSize / complexity * (8/100));
+  return {
+    numBlackHoles : numBlackHoles,
+    numTimeCorridors : numTimeCorridors
+  };
 };
 
-// create #TimeCorridors for board
-function getNumTimeCorridors() {
-  var complexity = setComplexity();
-  var boardSize = getBoardSize();
-  numTimeCorridors = parseInt(boardSize / complexity * (8/100));
-  console.log('TimeCorridors# ' + numTimeCorridors);
-  return numTimeCorridors;
-};
-
-// Add BlackHoles to board array
-function blackHolesData() {
-  var numBlackHoles = getNumBlackHoles();
-  var bhPos = jumpPositions(getNumBlackHoles);
-  var bhDrops = hyperJumps(getNumBlackHoles);
-  for (var i=0; i<numBlackHoles; i++) {
-    board[bhPos[i]] = bhDrop[i];
-  }
-};
-
-
-// Add TimeCorridors to board array
-function TimeCorridorsData() {
-  var numTimeCorridors = getNumTimeCorridors();
-  var tcPos = jumpPositions(getNumTimeCorridors);
-  var tcDrops = hyperJumps(getNumTimeCorridors);
-  for (var i=0; i<numTimeCorridors; i++) {
-    board[tcPos[i]] = (tcDrop[i] * -1);
-  }
-};
 
 // Create Jump Positions
-function jumpPositions(number2Create) {
+function createJumpPos(number2Create) {
+  var jumpPos = [];
   var boardSize = getBoardSize();
   for (var i=0; i<number2Create; i++) {
-    position = Math.floor((Math.random() * boardSize)+1);
+    var position = Math.floor((Math.random() * boardSize * 0.95) + 1);
     jumpPos[i] = position;
   }
+  console.log(jumpPos);
+  return jumpPos;
 };
 
-// Create hyperJump values
-function hyperJumps(number2Create) {
-  for (var i=0; i<number2Create; i++) {
-
+// Create jump values
+function createJumpAmts(jumpPos, numBlackHoles) {
+  var jumpAmts = [];
+  var boardSize = getBoardSize();
+  for (var i=0; i<jumpPos.length; i++) {
+    var rndmAmt = Math.floor((Math.random() * boardSize * .15) + 5);
+    if (i < numBlackHoles) {
+      rndmAmt *= -1;
+    }
+      jumpAmts[i] = rndmAmt
   }
+  return jumpAmts;
 };
+
 
 // Get boardSize
 function getBoardSize() {
@@ -174,8 +181,7 @@ function getBoardSize() {
 
 //functions to run...
 createBoard();
-getNumTimeCorridors();
-getNumBlackHoles();
+
 
 
 
