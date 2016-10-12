@@ -4,13 +4,81 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="./css/style.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-    <title>SNAKES and LADDERS</title>
+    <title>FIREFLY</title>
   </head>
   <body>
+    <div class="container">
+      <div class="player-info">
+        <div class='player' id="player-one">
+        </div>
+        <div id="dice-cont">
+          <button type="button" id="dice-btn">ROLL</button>
+        </div>
+        <div class='player' id="player-two">
+        </div>
+      </div>
+      <div class="main-window">
+        <div class="board" id="board-container">
 
-    <button type="button" id="dice">ROLL ME!</button>
+        </div>
+        <div class="splash-screen">
+          <h1>Firefly</h1>
+          <p>Serenity1 and Serenity2 are cargo space ships. They get paid for jobs moving cargo and people.  Sometimes they strike it lucky, other times things go wrong.  Both are trying to get back home with a pocket full of money.
+          </p>
+          <input type="input" name="player1-name" value="">
+          <input type="input" name="player2-name" value="">
+          <button type="button" name="getRnd NameP1">Random Name</button>
+          <button type="button" name="getRnd NameP1">Randome Name</button>
 
 
+          <select class="set-boardsize">
+            <option value="Select">Select a board size</option>
+            <option value="25">25 light years</option>
+            <option value="64">64 light years</option>
+            <option value="100">100 light years</option>
+            <option value="200">200 light years</option>
+            </div>
+          <select>
+          <select class="set-dicesize">
+            <option value="Select">Select a dice size</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+            </div>
+          <select>
+          <select class="set-complexity">
+            <option value="Select">Select difficulty</option>
+            <option value="0.8">Easy</option>
+            <option value="1.0">Medium</option>
+            <option value="1.2">Hard</option>
+            <option value="1.4">Very Hard</option>
+            </div>
+          <select>
+
+          <button type="button" id="start-game">Start Game</button>
+
+        </div>
+        <div class="end-screen">
+          <p>test no see end
+          </p>
+        </div>
+      </div>
+
+      <div class="console" id="messaging">
+        <ul id="messaging-list">
+          <li>INSTRUCTIONS:</li>
+          <li>Serenity1 and Serenity2 are cargo space ships. They get paid for jobs moving cargo and people.  Sometimes they strike it lucky, other times things go wrong.  Both are trying to get back home with a pocket full of money.</li>
+        </ul>
+      </div>
+      
+      </div>
+
+    </div>
+
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js'></script>
     <script src="game.js"></script>
   </body>
 </html>
