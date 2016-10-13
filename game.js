@@ -4,10 +4,12 @@ console.log('Lets go!');
 var board = [];
 var players = ['Player1', 'Player2']
 var playerPos = [0,0];
+var playerEarnings = [0,0];
 var boardRows = 5; // potentiallly not required in new format
 var boardCols = 5; //
 var currentPlayer = 0;
-var diceSize = 6; // thrust potential
+var diceSize = 6; //default = 6
+var complexity = 1; //default 1
 var planets = [];
 
 // Set up board in DOM
@@ -19,39 +21,45 @@ function createGrid() {
     $divLoc.append($newDiv);
     for (var c=0; c<boardCols; c++) {
       var cellId = 'cell' + (boardCols * (r-1) + c);
-      console.log(rowId + ' ' + (boardCols * (r-1)) + cellId);
       var $newCell = $("<div>").attr('id', cellId).addClass("gridCell");
       var $cellLoc = $('.gridRow').eq(boardRows - r);
       $cellLoc.append($newCell);
     }
   }
+  updateBoardCSS();
 };
 
 
 // Console for game information
 function gameMessaging(msg2Console) {
-  var newItem = $("<li>").text(msg2Console);       // Create a <li> node
-  var list = $('#messaging-list');    // Get the <ul> element to insert a new node
-  list.prepend(newItem);  // Insert <li> before the first child of <ul>
+  if (msg2Console === 'empty') {
+    $('#messaging-list').empty();
+  } else {
+    var newItem = $("<li>").text(msg2Console);       // Create a <li> node
+    var list = $('#messaging-list');    // Get the <ul> element to insert a new node
+    list.prepend(newItem);  // Insert <li> before the first child of <ul>
+  }
 }
 
 function updatePlayerInfo() {
-  var player1Info = players[0] + ' @ ' + planets[playerPos[0]] + ' $' + playerPos[0];
-  var player2Info = players[1] + ' @ ' + planets[playerPos[1]] + ' $' + playerPos[1];
+  var player1Info = players[0] + '  $' + playerEarnings[0];
+  var player2Info = players[1] + '  $' + playerEarnings[1];
+  var player1Loc = planets[playerPos[0]];
+  var player2Loc = planets[playerPos[1]];
   $('#player-one').text(player1Info);
   $('#player-two').text(player2Info);
+  $('.p1-loc-money').text(players[0] + "\n" + player1Loc);
+  $('.p2-loc-money').text(players[0] + "\n" + player2Loc);
 }
 
-// player move
-function playerMove(){
-  playerPosition(currentPlayer);
-  nextPlayer();
-};
+
 
 // Dice Roll
 function rollDice(){
+  var diceBground = ['#FDE74C', '#C3423F']
+  $('.dice-cont').css('background-color', diceBground[currentPlayer])
   var roll = Math.floor((Math.random() * diceSize)+1);
-  // console.log('Player ' + currentPlayer + ' rolls a ' + roll);
+  $('#dice-btn').text(roll)
   return roll;
 };
 
@@ -64,32 +72,42 @@ function nextPlayer() {
   return currentPlayer;
 };
 
-// player position
-function playerPosition(currentPlayer) {
+// player move
+function playerMove() {
   var roll = rollDice();
+  playerEarnings[currentPlayer]+= roll;
+  emptyOldPlayerPos();
+  var oldPlayerPos = playerPos[currentPlayer]
   playerPos[currentPlayer]+= roll;
   checkWinner(roll, currentPlayer);
-  var adj4holeCorridor = check4HolesCorridors(playerPos[currentPlayer]);
+  var adj4holeCorridor = check4HolesCorridors();
   playerPos[currentPlayer]+= adj4holeCorridor;
-  updatePlayerPostion(playerPos[currentPlayer]);
-  gameMessaging(players[currentPlayer] + ' rolls a ' + roll + ' & moves to ' + planets[playerPos[currentPlayer]]);
+  if (playerPos[currentPlayer] < 0 ){
+    playerPos[currentPlayer] = 0;
+  }
+  updatePlayerInfo();
+  showPlayerPos();
+  nextPlayer();
 };
 
+
 // check if winner
-function checkWinner(move, currentPlayer) {
-  winningValue = getBoardSize();
+function checkWinner(roll, currentPlayer) {
+  winningValue = board.length;
   if (playerPos[currentPlayer] === winningValue) {
     winner(currentPlayer);
-    };
-  if (playerPos[currentPlayer] > winningValue) {
-    gameMessaging(players[currentPlayer] + ' is OVER!')
-    playerPos[currentPlayer]-= move;
-    };
+  } else if (playerPos[currentPlayer] > winningValue) {
+    playerPos[currentPlayer]-= roll;
+    gameMessaging(players[currentPlayer] + ' is OVER! Go stay at ' + planets[playerPos[currentPlayer]])
+  } else {
+    gameMessaging(players[currentPlayer]  + ' rolls a ' + roll + ' moves to ' + planets[playerPos[currentPlayer]]);
+  }
 };
 
 // winner
 function winner(currentPlayer) {
-  updatePlayerPostion();
+  updatePlayerInfo();
+  showPlayerPos();
   var winnerMessage = '****** '+ players[currentPlayer] + ' is the winner!!!!! ******';
   if (currentPlayer === 0 ){
     $('#player-one').text(winnerMessage);
@@ -98,29 +116,20 @@ function winner(currentPlayer) {
     $('#player-two').text(winnerMessage);
   }
   gameMessaging(winnerMessage);
-  resetGame();
+  endGame();
 };
 
-// update player position
-function updatePlayerPostion(currentPlayerPos) {
-  // console.log(players[currentPlayer] + ' has arrived at ' + planets[currentPlayerPos]);
-  // gameMessaging(players[currentPlayer] + ' has arrived at ' + planets[currentPlayerPos]);
-  // console.log(players[0] + ' Position = ' + playerPos[0] + ' ' + players[1] + '  Position = ' + playerPos[1]);
-  // gameMessaging(players[0] + ' Position = ' + playerPos[0] + ' ' + players[1] + '  Position = ' + playerPos[1]);
-  updatePlayerInfo();
-};
 
-function check4HolesCorridors(currentPlayerPos) {
+function check4HolesCorridors() {
+  var currentPlayerPos = playerPos[currentPlayer];
   var holeCorridorVal = 0;
   if (board[currentPlayerPos] != 'x') {
     holeCorridorVal = board[currentPlayerPos];
     if (holeCorridorVal < 0) {
-      // console.log('Oh no ' + players[currentPlayer] + ' a black hole!!!! Go back to ' + planets[currentPlayerPos + holeCorridorVal]);
-      gameMessaging('Oh no ' + players[currentPlayer] + ' a black hole!!!! Go back to ' + planets[currentPlayerPos + holeCorridorVal]);
+      gameMessaging('Oh no ' + players[currentPlayer] + ' a black hole!!!!' );
     };
     if (holeCorridorVal > 0) {
-      // console.log('Yes ' + players[currentPlayer] + ' a Time Corridor. Move forward to ' + planets[currentPlayerPos + holeCorridorVal]);
-      gameMessaging('Yes ' + players[currentPlayer] + ' a Time Corridor. Move forward to ' + planets[currentPlayerPos + holeCorridorVal]);
+      gameMessaging('Yes ' + players[currentPlayer] + ' a Time Corridor!!!!!');
     };
   }
   return holeCorridorVal;
@@ -128,44 +137,50 @@ function check4HolesCorridors(currentPlayerPos) {
 
 // reset game parameters
 function resetGame() {
-  gameMessaging('******** GAME RESET ********');
   playerPos = [0,0];
-  setComplexity();
-  $('.board').empty();
-  createBoard();
+  $('.board').hide();
+  $('.end-screen').hide();
+  $('.splash-screen').show();
+  $('.footer').hide();
 };
 
 function startGame() {
+  diceSize = $('.set-dicesize').val(); //default = 6
+  complexity = $('.set-complexity').val(); //default 1
   playerPos = [0,0];
-  setComplexity();
+  board = [];
   $('.board').empty();
   createBoard();
+  $('.end-screen').hide();
   $('.splash-screen').hide();
   $('.board').show();
+  $('.player-info').show();
+  gameMessaging('empty')
+  $('.footer').show();
+  checkPlayerNames();
+  updatePlayerInfo();
+  showPlayerPos();
+};
+
+function endGame() {
+  $('.gridCell').removeClass('cell-black-hole');
+  $('.gridCell').removeClass('cell-time-corridor');
+  $('.end-screen').show();
+  $('.board').hide();
+  $('.player-info').hide();
 }
 
-// complexity settings
-function setComplexity() {
-  var level = 1 // get input from user (0.8 - 1 - 1.2)
-  if (level < 1){
-    complexity = 0.8;
-  } else if (level > 1) {
-    complexity = 1.2;
-  } else {
-    complexity = 1;
-  }
-  return complexity;
-};
 
 // creates board based on inputs for board size x rows and y columns
 function createBoard(){
   var boardSize = getBoardSize();
   for (var i=0; i<boardSize; i++) {
-    board.push('x');
+    board.push(0);
   }
   calcJumps();
   console.log(board);
   createGrid();
+  addBoardHolsCorrs();
   createPlanetNames();
   return board
 };
@@ -190,11 +205,20 @@ function calcJumps() {
   // console.log('Jump Amounts are = ' + jumpAmts);
 };
 
+function checkPlayerNames() {
+  var p1 = $('.player1-name').val();
+  var p2 = $('.player2-name').val();
+  if (p1 != '') {
+    players[0] = p1;
+  };
+  if (p2 != '') {
+    players[1] = p2;
+  };
+}
 
 // create number of BlackHoles and time corridors for board
 function calcJumpNums() {
-  var complexity = setComplexity();
-  var boardSize = getBoardSize();
+  var boardSize = board.length;
   var numBlackHoles = parseInt(boardSize * complexity * (7/100));
   var numTimeCorridors = parseInt(boardSize / complexity * (8/100));
   return {
@@ -207,9 +231,9 @@ function calcJumpNums() {
 // Create Jump Positions
 function createJumpPos(number2Create) {
   var jumpPos = [];
-  var boardSize = getBoardSize();
+  var boardSize = board.length;
   for (var i=0; i<number2Create; i++) {
-    var position = Math.floor((Math.random() * boardSize * 0.95) + 1);
+    var position = Math.floor((Math.random() * boardSize * 0.85) + 1);
     jumpPos[i] = position;
   }
   // console.log(jumpPos);
@@ -219,7 +243,7 @@ function createJumpPos(number2Create) {
 // Create jump values
 function createJumpAmts(jumpPos, numBlackHoles) {
   var jumpAmts = [];
-  var boardSize = getBoardSize();
+  var boardSize = board.length;
   for (var i=0; i<jumpPos.length; i++) {
     var rndmAmt = Math.floor((Math.random() * boardSize * .15) + 5);
     if (i < numBlackHoles) {
@@ -233,9 +257,19 @@ function createJumpAmts(jumpPos, numBlackHoles) {
 
 // Get boardSize
 function getBoardSize() {
-  var board = boardRows * boardCols
-  return board;
+  var boardLength = $('.set-boardsize').val()
+  boardRows = Math.sqrt(boardLength);
+  boardCols = Math.sqrt(boardLength);
+  return boardLength;
 };
+
+function updateBoardCSS() {
+  var gridHeight = 500 / boardRows;
+  var gridWidth = 100/ boardCols;
+  $(".gridRow").css("height", gridHeight)
+  $(".gridCell").css("height", gridHeight)
+  $(".gridCell").css("width", gridWidth + '%')
+}
 
 // Create Planet names
 function createPlanetNames() {
@@ -247,15 +281,73 @@ function createPlanetNames() {
   return planets;
 }
 
+// Change grid cell ID's to update bground as a black hole or time corridor
+function addBoardHolsCorrs() {
+  for (var i=0; i<board.length; i++) {
+    var cell2change = 'cell' + i;
+    if (board[i] > 0 ) {
+      $('#'+cell2change).addClass('cell-time-corridor');
+    } else if (board[i] < 0) {
+      $('#'+cell2change).addClass('cell-black-hole');
+      }
+
+    }
+  }
+
+// show player position on board
+function showPlayerPos() {
+  var p1cell = 'cell' + playerPos[0];
+  var p2cell = 'cell' + playerPos[1];
+  $('#'+p1cell).prepend('<img id="p1" src="./images/p1.png" />');
+  $('#'+p2cell).prepend('<img id="p1" src="./images/p2.png" />');
+}
+
+function playerMoveAnimation(oldPlayerPos) {
+  player2Move = currentPlayer + 1;
+  if (player2Move > 1 ) {
+    player2Move = 0;
+  };
+  var pCell = 'cell' + playerPos[player2Move];
+  $('#'+pCell).empty();
+  var stepPlayerPosition =  setInterval(stepPlayer(player2Move, oldPlayerPos),500)
+}
+
+function stepPlayer(player2Move, oldPlayerPos) {
+  oldPlayerPos++
+  console.log(oldPlayerPos);
+  if (player2Move === 0) {
+    $('#cell'+oldPlayerPos).prepend('<img id="p1" src="./images/p1.png" />');
+    // $('#'+p2cell).prepend('<img id="p1" src="./images/p2.png" />');
+    if (oldPlayerPos > playerPos[0]) {
+      clearInterval(stepPlayerPosition);
+  } else {
+    // $('#'+p1cell).prepend('<img id="p1" src="./images/p1.png" />');
+    $('#cell'+oldPlayerPos).prepend('<img id="p1" src="./images/p2.png" />');
+    if (oldPlayerPos > playerPos[1]) {
+      clearInterval(stepPlayerPosition);
+  };
+  }
+}
+}
 
 
-//functions to run...
-createBoard();
+
+function emptyOldPlayerPos() {
+  var p1cell = 'cell' + playerPos[0];
+  var p2cell = 'cell' + playerPos[1];
+  $('#'+p1cell).empty();
+  $('#'+p2cell).empty();
+}
+
+
+//ON START...
+$('.player-info').hide();
+$('.footer').hide();
 
 
 
-//button event to generate dice roll
-// document.getElementById('dice-btn').addEventListener("click", playerMove);
-$('#dice-btn').on("click", playerMove)
-//button event to reset game
-$('#start-game').on("click", startGame)
+
+//BUTTONS
+$('#dice-btn').on("click", playerMove);
+$('#start-game').on("click", startGame);
+$('#play-again').on("click", resetGame);

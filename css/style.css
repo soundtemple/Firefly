@@ -1,11 +1,21 @@
 * {
-  font-family: 'Source Code Pro', monospace;
+  /*font-family: 'Source Code Pro', monospace;*/
+  font-family: 'Rajdhani', sans-serif;
   box-sizing: border-box;
-  color: green;
+  color: #C18C5D;
+
+/*.	font-family: 'Aldrich', sans-serif;
+.	font-family: 'Cabin', sans-serif;
+.	font-family: 'Kaushan Script', cursive;
+.	font-family: 'Orbitron', sans-serif;
+.	font-family: 'Rajdhani', sans-serif;
+.	font-family: 'Ubuntu', sans-serif;*/
 }
 
 body {
-  background-color: black;
+  /*background-color: #404E4D;*/
+  background-image: url(../images/bg2.png);
+  background-size: cover;
 }
 
 
@@ -19,15 +29,20 @@ body {
 .player-info {
   width: 100%;
   height: 40px;
-  border: 1px solid white;
 }
 
 .player {
   width: 40%;
   height: 100%;
+  border-radius: 10px;
   display: inline-block;
   float: left;
   text-align: center;
+  font-size: 1.4em;
+}
+
+.footer {
+  width: 100%;
 }
 
 #dice-cont {
@@ -36,23 +51,16 @@ body {
   float: left;
 }
 
-:root {
-  --board-height: 400px;
-  --board-rows: 5;
-  --board-cols: 5;
-}
-
 .main-window {
   width: 100%;
-  height: var(--board-height);
+  height: 500px);
 
 }
 
 
 .splash-screen {
   width: 100%;
-  height: var(--board-height);
-  border: 1px solid white;
+  height: 500px;
   margin: 0;
   text-align: center;
 }
@@ -60,42 +68,46 @@ body {
 .end-screen {
   display: none;
   width: 100%;
-  height: var(--board-height);
-  border: 1px solid white;
+  height: 500px;
   margin: 0;
 }
 
 .board {
   display: none;
   width: 100%;
-  height: var(--board-height);
-  border: 1px solid white;
+  height: 500px;
   margin: 0;
 }
 
 .gridRow {
   width: 100%;
-  height: calc(var(--board-height) / var(--board-rows));
-  display: inline-block;
+  height: 50px;
   margin: 0;
 }
 
 .gridCell {
-  width: calc(100% / var(--board-cols));
-  height: calc(var(--board-height) / var(--board-rows));
-  border: 1px solid white;
+  /*background-color: #51616B;*/
+  border-radius: 30px;
+  width: 10%;
+  height: 50px;
+  border: 2px solid #404E4D;
   display: inline-block;
-  margin: 0;
+  margin: 1px auto;
   float: left;
 
 }
 
 .console {
-  width: 100%;
-  border: 1px solid white;
-  height: 150px;
+  width: 50%;
+  height: 100px;
   display: inline-block;
   overflow: scroll;
+  font-size: 1.4em;
+  background-color: rgba(27, 34, 39, 0.8);
+  border-radius: 15px;
+  /*margin-top: : 1%;
+  padding-bottom: 1%;
+  margin-bottom: 1%;*/
 }
 
 
@@ -104,44 +116,163 @@ body {
 
 }
 
-
+.p1-loc-money, .p2-loc-money {
+  width: 24%;
+  height: 100px;
+  display: inline-block;
+  overflow: scroll;
+  font-size: 1.4em;
+  background-color: rgba(27, 34, 39, 0.8);
+  border-radius: 15px;
+  margin: 0 auto;
+}
 
 
 button {
   border: 0;
 }
 
+select {
+}
+
 .dice-cont {
-  background-color: grey;
+  background-color: transparent;
 }
 
 #dice-btn {
   width: 100%;
-  font-size: 1.7em;
+  text-align: -webkit-center;
+  font-size: 1.3em;
+  background-color: transparent;
 }
 
 #dice-btn:hover {
+  color: white;
+}
+
+.cell-black-hole {
+  /*vertical-align: middle;
+  background-image: url(../images/bh.gif);*/
+  background: black; /* For browsers that do not support gradients */
+  background: -webkit-radial-gradient(black, #313338, #6d7377); /* Safari 5.1 to 6.0 */
+  background: -o-radial-gradient(black, #313338, #6d7377); /* For Opera 11.6 to 12.0 */
+  background: -moz-radial-gradient(black, #313338, #6d7377); /* For Firefox 3.6 to 15 */
+  background: radial-gradient(black, #2D323A, black); /* Standard syntax */
+}
+
+.cell-time-corridor {
+  /*vertical-align: middle;
+  background-image: url(../images/tc.gif);*/
+  background: linear-gradient(to right, #2B3338, #384952);
+}
+}
+
+.cell-black-hole, .cell-time-corridor {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.splash-screen {
+  font-size: 140%;
+
+}
+
+.end-screen {
+  padding-top: 30%;
+}
+
+.player-info {
+  font-size: 1.2em;
+
+}
+
+#player-one {
+  background-color: #05575B;
+  color: black;
+}
+
+#player-two {
+  background-color: #975708;
+  color: black;
+}
+
+
+#start-game, #play-again {
+  display: block;
+  width 40%;
+  height: 10%;
+  margin: 2% auto;
   background-color: grey;
+  min-width: 40%;
+  font-size: 1.3em;
+  border-radius: 10px;
+  font-weight: bold;
+  color: black;
 }
 
-.gridRow {
-
+#start-game:hover {
+  background-color: #989c9c;
+  min-width: 40%;
 }
 
-.gridCell {
-  border: 1px solid white;
+input {
+  /*display: block;*/
+  margin: 2% auto;
+  height: 8%;
+  width: 40%;
+  padding: 2%;
+  background-color: grey;
+  border: none;
+  font-size: 1.3em;
+  color: black;
+  border-radius: 10px;
 }
 
-player1-pos {
-  background-color: green;
+/*.player1-name {
+  display: inline;
 }
 
-player2-pos {
-  background-color: blue;
+.player1-name {
+  display: inline;
+}*/
+
+img {
+  width: 50%;
+  display: block;
+  margin: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
+
+select {
+  /*display: block;*/
+  margin: 2% auto;
+  min-width: 40%;
+  background-color: grey;
+  border: none;
+  font-size: 1.3em;
+  color: black;
+  padding: 4%
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 
 h1 {
   text-align: center;
+  font-weight: bold;
+  font-family: 'Kaushan Script', cursive;
+  font-size: 2.5em;
+}
+
+p {
+  font-size: 1.2em;
+  background-color: rgba(27, 34, 39, 0.8);
+  border-radius: 15px;
+  padding: 1%;
 }
 
 ul {
