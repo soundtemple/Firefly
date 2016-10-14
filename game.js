@@ -48,8 +48,10 @@ function updatePlayerInfo() {
   var player2Loc = planets[playerPos[1]];
   $('#player-one').text(player1Info);
   $('#player-two').text(player2Info);
-  $('.p1-loc-money').text(players[0] + "\n" + player1Loc);
-  $('.p2-loc-money').text(players[0] + "\n" + player2Loc);
+  $('.p1-loc-money >h3').text(players[0]);
+  $('.p1-loc-money >p').text(player1Loc);
+  $('.p2-loc-money >h3').text(players[1]);
+  $('.p2-loc-money >p').text(player2Loc);
 }
 
 
@@ -228,7 +230,8 @@ function calcJumpNums() {
 };
 
 
-// Create Jump Positions
+// Create Jump Positionsvar vowels = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
+
 function createJumpPos(number2Create) {
   var jumpPos = [];
   var boardSize = board.length;
@@ -273,12 +276,34 @@ function updateBoardCSS() {
 
 // Create Planet names
 function createPlanetNames() {
-  // console.log(planets);
-  for ( var i=0; i<board.length; i++) {
-    planets[i] = 'P-' + i;
+  var prefix = ["Sn", "Sw", "Sl", "Sp", "Wh", "Fl", "Dr", "Fr", "Sh", "Ch", "Pl", "Gr", "Th", "Tr", "Pr", "Wh", "Bl", "Br", "B", "C", "D", "F", "G", "H", "J", "K", "M", "N", "P", "R", "S", "T", "V", "W", "Z", "Kl", "Cr", "Dr", "Kl", "Kr"];
+  var vowel = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
+  var suffix = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
+  var postCode = ["ZMB", "WP6", "", "Major", "Minor", "EW8", "8S5P", "A5", "S774", "X700", "Z7D3", "N49M", "66Q", "Z", "Q", "W9", "RB", "TD", "PQ", "SDA", "DX", "F", "GQ", "R808", "J106", "DR909"]
+  var numPlanets = board.length
+  for ( var i=0; i<numPlanets - 1; i++) {
+    pPrefix = prefix[Math.floor(Math.random() * prefix.length)];
+    pVowel = vowel[Math.floor(Math.random() * vowel.length)];
+    pSuffix = suffix[Math.floor(Math.random() * suffix.length)];
+    var addPostCode = Math.random();
+    if (addPostCode > 0.7) {
+      pPostCode =postCode[Math.floor(Math.random() * postCode.length)];
+    } else {
+      pPostCode = '';
+    }
+    planets[i] = pPrefix + pVowel + pSuffix + ' ' + pPostCode;
   }
-  // console.log(planets);
+  planets[numPlanets-1] = 'Bellerophon';
+  console.log(planets);
+
+
   return planets;
+}
+
+
+function displayPlanetInfo() {
+  console.log('game mesg firing');
+  gameMessaging('This is planet ' + planets[99]);
 }
 
 // Change grid cell ID's to update bground as a black hole or time corridor
@@ -351,3 +376,32 @@ $('.footer').hide();
 $('#dice-btn').on("click", playerMove);
 $('#start-game').on("click", startGame);
 $('#play-again').on("click", resetGame);
+$(document).on('click', '.gridCell' , function(e) {
+  var planetId = $(event.target).attr('id').replace(/[a-zA-Z]/g, '');
+  var addInfo = '';
+  var newPlanet = '';
+  var planetType = board[planetId];
+  if ( planetType > 0 ) {
+    console.log(planetId);
+    console.log(planetType);
+    console.log(planetId + planetType);
+    newPlanet = planets[Number(planetId) + Number(planetType)];
+    addInfo = '. It has a time corridor, taking you to ' + newPlanet;
+    if (newPlanet > board.length) {
+      addInfo = '';
+    }
+  };
+  if ( planetType < 0 ) {
+    if (Number(planetId) + Number(planetType) < 0) {
+      newPlanet = planets[0];
+    } else {
+      newPlanet = planets[Number(planetId) + Number(planetType)];
+    }
+    addInfo = '. It is a black hole, taking you back to ' + newPlanet;
+    if (newPlanet > 0) {
+      addInfo = '';
+    }
+  }
+  console.log('This is ' + planets[planetId] + addInfo);
+  gameMessaging('This is ' + planets[planetId] + addInfo);
+});

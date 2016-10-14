@@ -201,7 +201,7 @@ select {
 #start-game, #play-again {
   display: block;
   width 40%;
-  height: 10%;
+  height: 50px;
   margin: 2% auto;
   background-color: grey;
   min-width: 40%;
@@ -268,7 +268,19 @@ h1 {
   font-size: 2.5em;
 }
 
-p {
+h3 {
+  margin-left: 5px;
+  font-size: 1em;
+  text-align: center;
+  margin: 0;
+}
+
+.footer-text {
+  margin: 2px;
+  text-align: center;
+}
+
+.intro {
   font-size: 1.2em;
   background-color: rgba(27, 34, 39, 0.8);
   border-radius: 15px;
@@ -277,6 +289,7 @@ p {
 
 ul {
   list-style: none;
+  margin-bottom: 5px;
 }
 
 li {
