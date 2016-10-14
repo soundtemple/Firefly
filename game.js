@@ -41,6 +41,7 @@ function gameMessaging(msg2Console) {
   }
 }
 
+
 function updatePlayerInfo() {
   var player1Info = players[0] + '  $' + playerEarnings[0];
   var player2Info = players[1] + '  $' + playerEarnings[1];
@@ -230,8 +231,7 @@ function calcJumpNums() {
 };
 
 
-// Create Jump Positionsvar vowels = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
-
+// Create Jump Positions
 function createJumpPos(number2Create) {
   var jumpPos = [];
   var boardSize = board.length;
@@ -295,16 +295,9 @@ function createPlanetNames() {
   }
   planets[numPlanets-1] = 'Bellerophon';
   console.log(planets);
-
-
   return planets;
 }
 
-
-function displayPlanetInfo() {
-  console.log('game mesg firing');
-  gameMessaging('This is planet ' + planets[99]);
-}
 
 // Change grid cell ID's to update bground as a black hole or time corridor
 function addBoardHolsCorrs() {
@@ -377,18 +370,20 @@ $('#dice-btn').on("click", playerMove);
 $('#start-game').on("click", startGame);
 $('#play-again').on("click", resetGame);
 $(document).on('click', '.gridCell' , function(e) {
-  var planetId = $(event.target).attr('id').replace(/[a-zA-Z]/g, '');
+  if ($(event.target).hasClass('gridCell'))  {
+    var planetId = $(event.target).attr('id').replace(/[a-zA-Z]/g, '');
+  } else {
+    var planetId = $(event.target).parent().attr('id').replace(/[a-zA-Z]/g, '');
+  }
   var addInfo = '';
-  var newPlanet = '';
-  var planetType = board[planetId];
+  var newPlanet = 0;
+  var planetType = board[planetId];  // get +value for TC & -value for BHole
   if ( planetType > 0 ) {
-    console.log(planetId);
-    console.log(planetType);
-    console.log(planetId + planetType);
     newPlanet = planets[Number(planetId) + Number(planetType)];
     addInfo = '. It has a time corridor, taking you to ' + newPlanet;
     if (newPlanet > board.length) {
       addInfo = '';
+      newPlanet = 0;
     }
   };
   if ( planetType < 0 ) {
@@ -400,8 +395,8 @@ $(document).on('click', '.gridCell' , function(e) {
     addInfo = '. It is a black hole, taking you back to ' + newPlanet;
     if (newPlanet > 0) {
       addInfo = '';
+      newPlanet = 0;
     }
   }
-  console.log('This is ' + planets[planetId] + addInfo);
   gameMessaging('This is ' + planets[planetId] + addInfo);
 });

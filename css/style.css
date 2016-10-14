@@ -201,7 +201,7 @@ select {
 #start-game, #play-again {
   display: block;
   width 40%;
-  height: 50px;
+  height: 50px  ;
   margin: 2% auto;
   background-color: grey;
   min-width: 40%;
@@ -294,4 +294,5 @@ ul {
 
 li {
   font-size: .8em;
+  padding: 10px;
 }
