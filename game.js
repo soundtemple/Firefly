@@ -11,6 +11,8 @@ var currentPlayer = 0;
 var diceSize = 6; //default = 6
 var complexity = 1; //default 1
 var planets = [];
+var roll = 0;
+var animationTimer;
 
 // Set up board in DOM
 function createGrid() {
@@ -47,8 +49,8 @@ function updatePlayerInfo() {
   var player2Info = players[1] + '  $' + playerEarnings[1];
   var player1Loc = planets[playerPos[0]];
   var player2Loc = planets[playerPos[1]];
-  $('#player-one').text(player1Info);
-  $('#player-two').text(player2Info);
+  $('#player-one >h3').text(player1Info);
+  $('#player-two >h3').text(player2Info);
   $('.p1-loc-money >h3').text(players[0]);
   $('.p1-loc-money >p').text(player1Loc);
   $('.p2-loc-money >h3').text(players[1]);
@@ -56,12 +58,11 @@ function updatePlayerInfo() {
 }
 
 
-
 // Dice Roll
 function rollDice(){
   var diceBground = ['#FDE74C', '#C3423F']
   $('.dice-cont').css('background-color', diceBground[currentPlayer])
-  var roll = Math.floor((Math.random() * diceSize)+1);
+  roll = Math.floor((Math.random() * diceSize)+1);
   $('#dice-btn').text(roll)
   return roll;
 };
@@ -75,35 +76,104 @@ function nextPlayer() {
   return currentPlayer;
 };
 
+//Get other player
+function getOtherPlayer(currentPlayer) {
+  var otherPlayer = 1;
+  if (currentPlayer === 1){
+    otherPlayer= 0;
+  }
+  return otherPlayer;
+};
+
 // player move
 function playerMove() {
-  var roll = rollDice();
+  nextPlayer();
+  roll = rollDice();
   playerEarnings[currentPlayer]+= roll;
-  emptyOldPlayerPos();
-  var oldPlayerPos = playerPos[currentPlayer]
-  playerPos[currentPlayer]+= roll;
-  checkWinner(roll, currentPlayer);
+  if ((playerPos[currentPlayer] + roll) <= getBoardSize()) {
+    gameMessaging(players[currentPlayer]  + ' rolls a ' + roll + ' moves to ' + planets[playerPos[currentPlayer] + roll]);
+  }
+  //set up animation
+  var destination = playerPos[currentPlayer] + roll;
+  clearInterval(animationTimer);
+  activate_timer(destination);
+};
+
+//Player move pt2 - check holes/corridors and move again if required.
+function playerMoveJump() {
+  console.log('player move jump function');
   var adj4holeCorridor = check4HolesCorridors();
-  playerPos[currentPlayer]+= adj4holeCorridor;
-  if (playerPos[currentPlayer] < 0 ){
-    playerPos[currentPlayer] = 0;
+  console.log(adj4holeCorridor + "this is the jump");
+  // debugger
+  if (adj4holeCorridor != 0) {
+    var destination = playerPos[currentPlayer] + adj4holeCorridor;
+    console.log('BH/TC detected. Destination = ' + destination);
+    if (destination < 0) {
+      console.log("Less than zero");
+      destination = 0;
+    }
+  updatePlayerInfo();
+  activate_timer(destination);
   }
   updatePlayerInfo();
+  // return destination
+};
+
+function activate_timer(destination) {
+  animationTimer = setInterval(function(){
+    console.log('normal running', animationTimer);
+    animatePlayerMove(destination);
+  }, 250);
+}
+
+//Animate player move. check winner, check for holes/corridors
+function animatePlayerMove(destination) {
+  emptyOldPlayerPos();
+  console.log(destination + 'dest.');
+  console.log(playerPos[currentPlayer] + 'current player pos');
+  if (destination > playerPos[currentPlayer]) {
+    playerPos[currentPlayer]+=1;
+  } else if (destination < playerPos[currentPlayer]) {
+    playerPos[currentPlayer]-=1;
+  } else if (destination === playerPos[currentPlayer]) {
+    console.log('CANCELING TIMER', animationTimer);
+    clearInterval(animationTimer);
+    checkWinner(currentPlayer);
+    console.log('Destination = ' + destination + players[currentPlayer] + ' is at ' + playerPos[currentPlayer]);
+    playerMoveJump();
+  }
   showPlayerPos();
-  nextPlayer();
 };
 
 
+// show player position on board
+function showPlayerPos() {
+  var p1cell = 'cell' + playerPos[0];
+  var p2cell = 'cell' + playerPos[1];
+  if (playerPos[0] === playerPos[1]) {
+    $('#'+p1cell).prepend('<img id="p1" src="./images/sh12.png" />');
+  } else {
+    $('#'+p1cell).prepend('<img id="p1" src="./images/sh1.png" />');
+    $('#'+p2cell).prepend('<img id="p1" src="./images/sh2.png" />');
+  }
+}
+
+
+function emptyOldPlayerPos() {
+  var p1cell = 'cell' + playerPos[0];
+  var p2cell = 'cell' + playerPos[1];
+  $('#'+p1cell).empty();
+  $('#'+p2cell).empty();
+}
+
 // check if winner
-function checkWinner(roll, currentPlayer) {
-  winningValue = board.length;
+function checkWinner(currentPlayer) {
+  winningValue = (board.length-1);
   if (playerPos[currentPlayer] === winningValue) {
     winner(currentPlayer);
   } else if (playerPos[currentPlayer] > winningValue) {
     playerPos[currentPlayer]-= roll;
     gameMessaging(players[currentPlayer] + ' is OVER! Go stay at ' + planets[playerPos[currentPlayer]])
-  } else {
-    gameMessaging(players[currentPlayer]  + ' rolls a ' + roll + ' moves to ' + planets[playerPos[currentPlayer]]);
   }
 };
 
@@ -111,13 +181,7 @@ function checkWinner(roll, currentPlayer) {
 function winner(currentPlayer) {
   updatePlayerInfo();
   showPlayerPos();
-  var winnerMessage = '****** '+ players[currentPlayer] + ' is the winner!!!!! ******';
-  if (currentPlayer === 0 ){
-    $('#player-one').text(winnerMessage);
-  }
-  if (currentPlayer === 1 ){
-    $('#player-two').text(winnerMessage);
-  }
+  var winnerMessage = '** '+ players[currentPlayer] + ' is the winner!!!!! **';
   gameMessaging(winnerMessage);
   endGame();
 };
@@ -126,7 +190,7 @@ function winner(currentPlayer) {
 function check4HolesCorridors() {
   var currentPlayerPos = playerPos[currentPlayer];
   var holeCorridorVal = 0;
-  if (board[currentPlayerPos] != 'x') {
+  if (board[currentPlayerPos] != 0) {
     holeCorridorVal = board[currentPlayerPos];
     if (holeCorridorVal < 0) {
       gameMessaging('Oh no ' + players[currentPlayer] + ' a black hole!!!!' );
@@ -160,6 +224,7 @@ function startGame() {
   $('.player-info').show();
   gameMessaging('empty')
   $('.footer').show();
+  $('#dice-btn').text('ROLL')
   checkPlayerNames();
   updatePlayerInfo();
   showPlayerPos();
@@ -269,16 +334,20 @@ function getBoardSize() {
 function updateBoardCSS() {
   var gridHeight = 500 / boardRows;
   var gridWidth = 100/ boardCols;
+  var home_planet = "#cell"+(getBoardSize() - 1);
+  console.log(home_planet);
   $(".gridRow").css("height", gridHeight)
   $(".gridCell").css("height", gridHeight)
   $(".gridCell").css("width", gridWidth + '%')
+  $("#cell0").addClass("start_planet")
+  $(home_planet).addClass("home_planet")
 }
 
 // Create Planet names
 function createPlanetNames() {
   var prefix = ["Sn", "Sw", "Sl", "Sp", "Wh", "Fl", "Dr", "Fr", "Sh", "Ch", "Pl", "Gr", "Th", "Tr", "Pr", "Wh", "Bl", "Br", "B", "C", "D", "F", "G", "H", "J", "K", "M", "N", "P", "R", "S", "T", "V", "W", "Z", "Kl", "Cr", "Dr", "Kl", "Kr"];
   var vowel = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
-  var suffix = ["ae", "iy", "au", "up", "ea", "ei", "ue", "eo", "ia", "iu", "a", "e", "i", "o", "u"];
+  var suffix = ["drealea", "miocury", "frarth", "kypso", "tune", "mia", "snope", "buyama", "ichi", "", "kothea", "skuna", "grorth", "carro", "shan", "wuovis", "gryke", "clillon", "tov", "iaruta", "cania", "facury", "pluarus", "slaowei", "plippe", "vacliuq", "maruta", "pogawa", "bliri", "frora"];
   var postCode = ["ZMB", "WP6", "", "Major", "Minor", "EW8", "8S5P", "A5", "S774", "X700", "Z7D3", "N49M", "66Q", "Z", "Q", "W9", "RB", "TD", "PQ", "SDA", "DX", "F", "GQ", "R808", "J106", "DR909"]
   var numPlanets = board.length
   for ( var i=0; i<numPlanets - 1; i++) {
@@ -293,7 +362,7 @@ function createPlanetNames() {
     }
     planets[i] = pPrefix + pVowel + pSuffix + ' ' + pPostCode;
   }
-  planets[numPlanets-1] = 'Bellerophon';
+  planets[numPlanets-1] = 'Bellerophon (home!)';
   console.log(planets);
   return planets;
 }
@@ -312,50 +381,7 @@ function addBoardHolsCorrs() {
     }
   }
 
-// show player position on board
-function showPlayerPos() {
-  var p1cell = 'cell' + playerPos[0];
-  var p2cell = 'cell' + playerPos[1];
-  $('#'+p1cell).prepend('<img id="p1" src="./images/p1.png" />');
-  $('#'+p2cell).prepend('<img id="p1" src="./images/p2.png" />');
-}
 
-function playerMoveAnimation(oldPlayerPos) {
-  player2Move = currentPlayer + 1;
-  if (player2Move > 1 ) {
-    player2Move = 0;
-  };
-  var pCell = 'cell' + playerPos[player2Move];
-  $('#'+pCell).empty();
-  var stepPlayerPosition =  setInterval(stepPlayer(player2Move, oldPlayerPos),500)
-}
-
-function stepPlayer(player2Move, oldPlayerPos) {
-  oldPlayerPos++
-  console.log(oldPlayerPos);
-  if (player2Move === 0) {
-    $('#cell'+oldPlayerPos).prepend('<img id="p1" src="./images/p1.png" />');
-    // $('#'+p2cell).prepend('<img id="p1" src="./images/p2.png" />');
-    if (oldPlayerPos > playerPos[0]) {
-      clearInterval(stepPlayerPosition);
-  } else {
-    // $('#'+p1cell).prepend('<img id="p1" src="./images/p1.png" />');
-    $('#cell'+oldPlayerPos).prepend('<img id="p1" src="./images/p2.png" />');
-    if (oldPlayerPos > playerPos[1]) {
-      clearInterval(stepPlayerPosition);
-  };
-  }
-}
-}
-
-
-
-function emptyOldPlayerPos() {
-  var p1cell = 'cell' + playerPos[0];
-  var p2cell = 'cell' + playerPos[1];
-  $('#'+p1cell).empty();
-  $('#'+p2cell).empty();
-}
 
 
 //ON START...
@@ -365,8 +391,10 @@ $('.footer').hide();
 
 
 
-//BUTTONS
+//EVENT LISTENER
 $('#dice-btn').on("click", playerMove);
+$('.p1-loc-money').on("click", playerMove); // player1 move
+$('.p2-loc-money').on("click", playerMove); // player2 move
 $('#start-game').on("click", startGame);
 $('#play-again').on("click", resetGame);
 $(document).on('click', '.gridCell' , function(e) {
@@ -380,7 +408,7 @@ $(document).on('click', '.gridCell' , function(e) {
   var planetType = board[planetId];  // get +value for TC & -value for BHole
   if ( planetType > 0 ) {
     newPlanet = planets[Number(planetId) + Number(planetType)];
-    addInfo = '. It has a time corridor, taking you to ' + newPlanet;
+    addInfo = '. It has a time corridor, taking you forward to ' + newPlanet;
     if (newPlanet > board.length) {
       addInfo = '';
       newPlanet = 0;
