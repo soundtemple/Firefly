@@ -182,6 +182,7 @@ function winner(currentPlayer) {
   updatePlayerInfo();
   showPlayerPos();
   var winnerMessage = '** '+ players[currentPlayer] + ' is the winner!!!!! **';
+  $(".end-screen >h3").text('** '+ players[currentPlayer] + ' is the winner!!!!! **')
   gameMessaging(winnerMessage);
   endGame();
 };
@@ -208,6 +209,7 @@ function resetGame() {
   $('.board').hide();
   $('.end-screen').hide();
   $('.splash-screen').show();
+  $('.player-info').hide();
   $('.footer').hide();
 };
 
@@ -235,7 +237,7 @@ function endGame() {
   $('.gridCell').removeClass('cell-time-corridor');
   $('.end-screen').show();
   $('.board').hide();
-  $('.player-info').hide();
+
 }
 
 
