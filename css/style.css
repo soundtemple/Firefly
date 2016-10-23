@@ -2,7 +2,7 @@
   /*font-family: 'Source Code Pro', monospace;*/
   font-family: 'Rajdhani', sans-serif;
   box-sizing: border-box;
-  color: #C18C5D;
+
 
 /*.	font-family: 'Aldrich', sans-serif;
 .	font-family: 'Cabin', sans-serif;
@@ -13,9 +13,10 @@
 }
 
 body {
-  /*background-color: #404E4D;*/
-  background-image: url(../images/bg2.png);
-  background-size: cover;
+  /*background-color: #070708;*/
+  background-image: url(../images/bg1000d.png);
+  /*background-size:cover;*/
+  background-repeat: repeat;
 }
 
 
@@ -43,6 +44,7 @@ body {
 
 .footer {
   width: 100%;
+  padding-top: 5px;
 }
 
 #dice-cont {
@@ -60,9 +62,14 @@ body {
 
 .splash-screen {
   width: 100%;
-  height: 500px;
-  margin: 0;
+  height: 525px;
+  margin-top: 8%;
+  border-radius: 30px;
   text-align: center;
+  /*overflow: hidden;*/
+  font-size: 120%;
+  background-color: rgba(11, 27, 36, 0.8);
+  /*background-image: url(../images/bg2.png);*/
 }
 
 .end-screen {
@@ -75,39 +82,38 @@ body {
 .board {
   display: none;
   width: 100%;
-  height: 500px;
+  /*height: ;*/
   margin: 0;
+  /*background-color: rgba(2, 4, 6, 0.9);*/
+  border-radius: 24px;
 }
 
 .gridRow {
   width: 100%;
-  height: 50px;
+  /*height: 50px;*/
   margin: 0;
 }
 
 .gridCell {
-  /*background-color: #51616B;*/
-  border-radius: 30px;
+  /*background-color: rgba(2, 4, 6, 0.8);*/
+  /*background: linear-gradient(to right, grey, blue);*/
+  /*background-color: #03090c;*/
+  border-radius: 20px;
   width: 10%;
   height: 50px;
-  border: 2px solid #404E4D;
+  /*border: 2px solid rgba(125, 136, 141, 0.5);*/
   display: inline-block;
-  margin: 1px auto;
+  background-image: url(../images/planets/p1.png);
   float: left;
 
 }
 
-.console {
-  width: 50%;
-  height: 100px;
-  display: inline-block;
-  overflow: scroll;
-  font-size: 1.4em;
-  background-color: rgba(27, 34, 39, 0.8);
-  border-radius: 15px;
-  /*margin-top: : 1%;
-  padding-bottom: 1%;
-  margin-bottom: 1%;*/
+.start_planet {
+  background-image: url(../images/planets/p5.png);
+}
+
+.home_planet {
+  background-image: url(../images/planets/pHome.png);
 }
 
 
@@ -119,12 +125,32 @@ body {
 .p1-loc-money, .p2-loc-money {
   width: 24%;
   height: 100px;
+  font-size: 1.2em;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.p1-loc-money, .p2-loc-money, .console  {
+  color: rgba(5,87,91,0.6);
+  background-color: rgba(2, 4, 6, 0.7);
+  color: #91C2AD;
+  border: 2px solid rgba(125, 136, 141, 0.5);
+  border-radius: 15px;
   display: inline-block;
   overflow: scroll;
+  height: 100px;
+}
+
+.console {
+  width: 50%;
   font-size: 1.4em;
-  background-color: rgba(27, 34, 39, 0.8);
-  border-radius: 15px;
-  margin: 0 auto;
+}
+
+#player-one, #player-two, #dice-cont  {
+  border: 2px solid rgba(125, 136, 141, 0.5);
+  background-color: rgba(2, 4, 6, 0.7);
+  border-radius: 10px;
+  color: #91C2AD;
 }
 
 
@@ -132,8 +158,6 @@ button {
   border: 0;
 }
 
-select {
-}
 
 .dice-cont {
   background-color: transparent;
@@ -144,39 +168,30 @@ select {
   text-align: -webkit-center;
   font-size: 1.3em;
   background-color: transparent;
+  color: #91C2AD;
 }
 
 #dice-btn:hover {
-  color: white;
+  color: #0CBCB7;
 }
 
 .cell-black-hole {
-  /*vertical-align: middle;
-  background-image: url(../images/bh.gif);*/
-  background: black; /* For browsers that do not support gradients */
-  background: -webkit-radial-gradient(black, #313338, #6d7377); /* Safari 5.1 to 6.0 */
-  background: -o-radial-gradient(black, #313338, #6d7377); /* For Opera 11.6 to 12.0 */
-  background: -moz-radial-gradient(black, #313338, #6d7377); /* For Firefox 3.6 to 15 */
-  background: radial-gradient(black, #2D323A, black); /* Standard syntax */
+  background-image: url(../images/planets/bh.png);
+
 }
 
 .cell-time-corridor {
-  /*vertical-align: middle;
-  background-image: url(../images/tc.gif);*/
-  background: linear-gradient(to right, #2B3338, #384952);
-}
+  background-image: url(../images/planets/p4.png);
 }
 
-.cell-black-hole, .cell-time-corridor {
-  background-size: cover;
+
+.cell-black-hole, .cell-time-corridor, .gridCell {
   background-repeat: no-repeat;
   background-position: center;
+  display: inline-block;
+  background-size: 30px 30px;
 }
 
-.splash-screen {
-  font-size: 140%;
-
-}
 
 .end-screen {
   padding-top: 30%;
@@ -184,49 +199,45 @@ select {
 
 .player-info {
   font-size: 1.2em;
+  margin-bottom: 5px;
 
 }
 
-#player-one {
-  background-color: #05575B;
-  color: black;
-}
 
-#player-two {
-  background-color: #975708;
-  color: black;
-}
 
 
 #start-game, #play-again {
   display: block;
   width 40%;
   height: 50px  ;
-  margin: 2% auto;
-  background-color: grey;
+  margin: auto;
+  background-color: transparent;
   min-width: 40%;
   font-size: 1.3em;
   border-radius: 10px;
   font-weight: bold;
-  color: black;
+  color: #91C2AD;
 }
 
 #start-game:hover {
-  background-color: #989c9c;
+  color: #0CBCB7;
   min-width: 40%;
 }
 
+
+
 input {
   /*display: block;*/
-  margin: 2% auto;
-  height: 8%;
+  margin: 0% auto;
+  height: 7%;
   width: 40%;
   padding: 2%;
-  background-color: grey;
+  background-color: transparent;
   border: none;
+  border-bottom: 3px solid #91C2AD;
   font-size: 1.3em;
-  color: black;
-  border-radius: 10px;
+  color: #91C2AD;
+  border-radius: 7px;
 }
 
 /*.player1-name {
@@ -238,7 +249,8 @@ input {
 }*/
 
 img {
-  width: 50%;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   margin: auto;
   position: relative;
@@ -246,14 +258,22 @@ img {
   transform: translateY(-50%);
 }
 
+.S1, .S2 {
+  max-width: 50px;
+  padding-top: 20px;
+  /*display: inline-block;*/
+  float: left;
+}
+
 select {
   /*display: block;*/
-  margin: 2% auto;
-  min-width: 40%;
-  background-color: grey;
+  margin-top: 8%;
+  margin-bottom: 6%;
+  min-width: 25%;
+  background-color: transparent;
   border: none;
   font-size: 1.3em;
-  color: black;
+  color: #91C2AD;
   padding: 4%
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -265,34 +285,63 @@ h1 {
   text-align: center;
   font-weight: bold;
   font-family: 'Kaushan Script', cursive;
-  font-size: 2.5em;
+  font-size: 3.5em;
+  margin: 0;
+  /*color: #91C2AD;*/
+  color: #0CBCB7;
 }
 
 h3 {
   margin-left: 5px;
   font-size: 1em;
-  text-align: center;
+  /*text-align: center;*/
   margin: 0;
 }
 
 .footer-text {
   margin: 2px;
-  text-align: center;
+  /*text-align: */
+  display: inline-block;
+  width: 50%;
 }
 
 .intro {
   font-size: 1.2em;
-  background-color: rgba(27, 34, 39, 0.8);
   border-radius: 15px;
   padding: 1%;
+  color: #91C2AD;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 2%;
 }
 
 ul {
   list-style: none;
   margin-bottom: 5px;
+  padding-left: 10px;
+  margin-top: 10px;
+
 }
 
 li {
   font-size: .8em;
   padding: 10px;
+  padding-bottom: 14%;
+}
+
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #91C2AD;
+    opacity: .5;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #91C2AD;
+   opacity:  .5;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #91C2AD;
+   opacity:  .5;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #91C2AD;
 }
